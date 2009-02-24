@@ -80,6 +80,7 @@ Simply point your mirror bucket's original URL to your blog, your files will be 
 <p>If you use <a href="http://aws.amazon.com/cloudfront/">CloudFront</a>, you can use <a href="http://s3sync.net/wiki">s3sync</a> to offload your static files.</p>
 <p>You may also <a href="http://blog.mudy.info/2009/02/one-line-yuicompressor-script/">preprocess</a> your css js files <br />
 and <a href="http://smushit.com/">smush</a> your static images before offloading.</p>
+<p>Check this <a href="http://blog.mudy.info/2009/02/how-to-copy-selected-files-to-cloudfront">post</a> if you have problem copying files to Aamazon S3</p>
 <br />
 <br /> 
 <p><strong style="color:red;"> WARNING:</strong> Test some static urls e.g., http://static.mydomain.com/wp-includes/js/prototype.js <br/>
