@@ -3,7 +3,7 @@
 Plugin Name: My CDN
 Plugin URI: http://blog.mudy.info/my-plugins/
 Description: Help you offloading javascript, css and theme files to your own CDN network. This plugin only handle url rewriting not actual file transferring.
-Version: 0.9
+Version: 1.0
 Author: Yejun Yang
 Author URI: http://blog.mudy.info/
 */
@@ -30,6 +30,7 @@ add_option('my_cdn_css', 'http://');
 add_option('my_cdn_theme', 'http://');
 
 $my_cdn_old_urls = preg_split('/[\s,]+/', get_option('my_cdn_old_url'));
+$my_cdn_old_urls = preg_replace('/\./', '\\.',$my_cdn_old_urls);
 $my_cdn_old_urls = preg_replace('/^.*$/', '#^\\0#i',$my_cdn_old_urls);
 
 $my_cdn_excludes = preg_split('/[\s,]+/', get_option('my_cdn_exclude'));
@@ -48,17 +49,17 @@ function check_cdn_exclude($url) {
 function filter_cdn_js($url) {
 	global $my_cdn_old_urls;
 	if (check_cdn_exclude($url)) return $url;
-	return preg_replace( $my_cdn_old_urls, get_option('my_cdn_js'),$url);
+	return preg_replace( $my_cdn_old_urls, get_option('my_cdn_js'),$url, 1);
 }
 function filter_cdn_css($url) {
 	global $my_cdn_old_urls;
 	if (check_cdn_exclude($url)) return $url;
-        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_css'),$url);
+        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_css'),$url, 1);
 }
 function filter_cdn_theme($url) {
 	global $my_cdn_old_urls;
         if (check_cdn_exclude($url)) return $url;
-        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_theme'),$url);
+        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_theme'),$url, 1);
 }
 
 add_action('admin_menu', 'my_cdn_menu');

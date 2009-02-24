@@ -14,7 +14,10 @@ Help you offloading javascript, css and theme files to your own CDN network. Thi
 
 * Rewrite your js, css and theme file's urls with your own prefix
 * Support excluding url patterns
-* Tested with SimpleCDn's Mirror bucket
+* Tested with SimpleCDn's Mirror bucket and Amazon CloudFront.
+
+Change Log:
+ Version 1.0: Tight up some regular expression.
 
 == Installation ==
 
@@ -27,7 +30,19 @@ Help you offloading javascript, css and theme files to your own CDN network. Thi
 
 = Which CDN service will work? =
 
-Any mirror service allows exact matching path will work. SimpleCDN Mirror bucket is tested. CloudFront through s3sync should work as well.
+Any mirror service allows exact matching path will work. SimpleCDN Mirror bucket and Amazon S3/Cloudfront are tested..
+
+= How to copy files to Amazon S3/CloudFront =
+
+Please check my post: [How to copy selected files to Aamazon S3 Cloudfront](http://blog.mudy.info/2009/02/how-to-copy-selected-files-to-cloudfront/)
+
+= How to batch minify js and css files =
+
+Please check my post: [How to batch process js and css](http://blog.mudy.info/2009/02/one-line-yuicompressor-script/)
+
+= What is the correct SimpleCDN pre-URL and CNAME =
+
+Please check my post: [Correct SimpleCDN pre-URL and CNAMEs](http://blog.mudy.info/2009/02/how-to-use-simplecdn-with-wordpress/)
 
 == Screenshots ==
 
