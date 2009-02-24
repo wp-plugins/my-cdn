@@ -31,4 +31,4 @@ Any mirror service allows exact matching path will work. SimpleCDN Mirror bucket
 
 == Screenshots ==
 
-1. Settings `/trunk/screenshot.png`
+1. Settings
