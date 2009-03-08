@@ -14,9 +14,11 @@ Help you offloading javascript, css and theme files to your own CDN network. Thi
 
 * Rewrite your js, css and theme file's urls with your own prefix
 * Support excluding url patterns
+* Multiple destination url can be used to increase page loading speed
 * Tested with SimpleCDn's Mirror bucket and Amazon CloudFront.
 
 Change Log:
+ Version 1.1: Support multiple destination urls.
  Version 1.0: Tight up some regular expression.
 
 == Installation ==
@@ -43,6 +45,15 @@ Please check my post: [How to batch process js and css](http://blog.mudy.info/20
 = What is the correct SimpleCDN pre-URL and CNAME =
 
 Please check my post: [Correct SimpleCDN pre-URL and CNAMEs](http://blog.mudy.info/2009/02/how-to-use-simplecdn-with-wordpress/)
+
+= Should I use multiple destination urls
+
+If you have more than 10 items on a single page, you should. However css images refered in a single css file will be loaded from a single destination.
+
+= How to get multiple destinations
+
+* If you use amazon cloudfront, you can add up to 10 CNAME for every single distribution.
+* If you simplecdn, you have two options. One you use multiple bucket. Two use different pre urls.
 
 == Screenshots ==
 

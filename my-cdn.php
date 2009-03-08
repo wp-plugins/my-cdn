@@ -3,7 +3,7 @@
 Plugin Name: My CDN
 Plugin URI: http://blog.mudy.info/my-plugins/
 Description: Help you offloading javascript, css and theme files to your own CDN network. This plugin only handle url rewriting not actual file transferring.
-Version: 1.0
+Version: 1.1
 Author: Yejun Yang
 Author URI: http://blog.mudy.info/
 */
@@ -29,12 +29,17 @@ add_option('my_cdn_js', 'http://');
 add_option('my_cdn_css', 'http://');
 add_option('my_cdn_theme', 'http://');
 
-$my_cdn_old_urls = preg_split('/[\s,]+/', get_option('my_cdn_old_url'));
+$my_cdn_old_urls = preg_split('/[\s,]+/', trim(get_option('my_cdn_old_url')));
 $my_cdn_old_urls = preg_replace('/\./', '\\.',$my_cdn_old_urls);
-$my_cdn_old_urls = preg_replace('/^.*$/', '#^\\0#i',$my_cdn_old_urls);
+$my_cdn_old_urls = preg_replace('/^.*$/', '#^\\0#i',$my_cdn_old_urls, 1);
 
-$my_cdn_excludes = preg_split('/[\s,]+/', get_option('my_cdn_exclude'));
-$my_cdn_excludes = preg_replace('/^.*$/', '#\\0#i',$my_cdn_excludes);
+$my_cdn_excludes = preg_split('/[\s,]+/', trim(get_option('my_cdn_exclude')));
+$my_cdn_excludes = preg_replace('/^.*$/', '#\\0#i',$my_cdn_excludes, 1);
+
+$my_cdn_jss = preg_split('/[\s,]+/', trim(get_option('my_cdn_js')));
+$my_cdn_csss = preg_split('/[\s,]+/', trim(get_option('my_cdn_css')));
+$my_cdn_themes = preg_split('/[\s,]+/', trim(get_option('my_cdn_theme')));
+
 
 function check_cdn_exclude($url) {
 	global $my_cdn_excludes;
@@ -46,20 +51,27 @@ function check_cdn_exclude($url) {
 	return false;
 }
 
+function cdn_hash($url, $buckets) {
+	if(count($buckets)==1) return $buckets[0];
+	$hash = crc32($url) % count($buckets);
+	if(strlen($buckets[$hash])>7) return $buckets[$hash];
+	else return $buckets[0];
+}
+
 function filter_cdn_js($url) {
-	global $my_cdn_old_urls;
-	if (check_cdn_exclude($url)) return $url;
-	return preg_replace( $my_cdn_old_urls, get_option('my_cdn_js'),$url, 1);
+	global $my_cdn_old_urls, $my_cdn_jss;
+	if (check_cdn_exclude($url) ) return $url;
+	return preg_replace( $my_cdn_old_urls, cdn_hash($url,$my_cdn_jss) ,$url, 1);
 }
 function filter_cdn_css($url) {
-	global $my_cdn_old_urls;
-	if (check_cdn_exclude($url)) return $url;
-        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_css'),$url, 1);
+	global $my_cdn_old_urls, $my_cdn_csss;
+	if (check_cdn_exclude($url) ) return $url;
+        return preg_replace( $my_cdn_old_urls, cdn_hash($url,$my_cdn_csss) ,$url, 1);
 }
 function filter_cdn_theme($url) {
-	global $my_cdn_old_urls;
-        if (check_cdn_exclude($url)) return $url;
-        return preg_replace( $my_cdn_old_urls, get_option('my_cdn_theme'),$url, 1);
+	global $my_cdn_old_urls, $my_cdn_themes;
+        if (check_cdn_exclude($url) ) return $url;
+        return preg_replace( $my_cdn_old_urls, cdn_hash($url,$my_cdn_themes) ,$url, 1);
 }
 
 add_action('admin_menu', 'my_cdn_menu');
@@ -71,16 +83,10 @@ function my_cdn_menu() {
 function my_cdn_options() {
 ?>
 <div class="wrap">
-<h2>My CDN URL Settings</h2>
-<p>
-Please use CDN service offloading your files before enable functions on this page or you will have a broken page.</p>
-<p><a href="http://www.simplecdn.com/">SimpleCDN</a> mirror bucket will be a quick start. <br />
-Simply point your mirror bucket's original URL to your blog, your files will be offloaded automatically.
-</p>
-<p>If you use <a href="http://aws.amazon.com/cloudfront/">CloudFront</a>, you can use <a href="http://s3sync.net/wiki">s3sync</a> to offload your static files.</p>
+<h2>My CDN URL Settings</h>
+<p>If you use <a href="http://aws.amazon.com/cloudfront/">CloudFront</a>, you can read this <a href="http://blog.mudy.info/2009/02/how-to-copy-selected-files-to-cloudfront/">post</a> to help offloading your static files.</p>
 <p>You may also <a href="http://blog.mudy.info/2009/02/one-line-yuicompressor-script/">preprocess</a> your css js files <br />
-and <a href="http://smushit.com/">smush</a> your static images before offloading.</p>
-<p>Check this <a href="http://blog.mudy.info/2009/02/how-to-copy-selected-files-to-cloudfront">post</a> if you have problem copying files to Aamazon S3</p>
+<p>Multiple options can be seperated by comma or space. Please do not leave any trailing comma or space and slash.
 <br />
 <br /> 
 <p><strong style="color:red;"> WARNING:</strong> Test some static urls e.g., http://static.mydomain.com/wp-includes/js/prototype.js <br/>
@@ -107,19 +113,19 @@ to ensure your CDN service is fully working before saving changes.</p>
 <tr valign="top">
 <th scope="row"><label for="my_cdn_js">Javascript file pre-URL</label></th>
 <td><input type="text" name="my_cdn_js" value="<?php echo get_option('my_cdn_js'); ?>" size="50" /></td>
-<td><span class="setting-description">e.g. http://static.mydomain.com or http://static.mydomain.com/prefix<br />Empty string will disable this function.</span></td>
+<td><span class="setting-description">e.g. http://st1.mydomain.com,http://st2.mydomain.com<br />Empty string will disable this function.</span></td>
 </tr>
 
 <tr valign="top">
 <th scope="row"><label for="my_cdn_css">CSS file pre-URL</label></th>
 <td><input type="text" name="my_cdn_css" value="<?php echo get_option('my_cdn_css'); ?>" size="50" /></td>
-<td><span class="setting-description">e.g. http://static.mydomain.com or http://static.mydomain.com/prefix<br />Empty string will disable this function.</span></td>
+<td><span class="setting-description">e.g. http://st1.mydomain.com,http://st2.mydomain.com<br />Empty string will disable this function.</span></td>
 </tr>
 
 <tr valign="top">
 <th scope="row"><label for="my_cdn_theme">Theme file pre-URL</label></th>
 <td><input type="text" name="my_cdn_theme" value="<?php echo get_option('my_cdn_theme'); ?>" size="50" /></td>
-<td><span class="setting-description">e.g. http://static.mydomain.com or http://static.mydomain.com/prefix<br />Empty string will disable this function.</span></td>
+<td><span class="setting-description">e.g. http://st1.mydomain.com,http://st2.mydomain.com<br />Empty string will disable this function.</span></td>
 </tr>
 
 </table>
@@ -136,10 +142,10 @@ to ensure your CDN service is fully working before saving changes.</p>
 <?php
 }
 
-if (strlen(get_option('my_cdn_js'))>7)
+if (count($my_cdn_jss)>0 && strlen($my_cdn_jss[0])>7)
 	add_filter('script_loader_src','filter_cdn_js');
-if (strlen(get_option('my_cdn_css'))>7)
+if (count($my_cdn_csss)>0 && strlen($my_cdn_csss[0])>7)
 	add_filter('style_loader_src','filter_cdn_css');
-if (strlen(get_option('my_cdn_theme'))>7)
+if (count($my_cdn_themes)>0 && strlen($my_cdn_themes[0])>7)
 	add_filter('theme_root_uri','filter_cdn_theme');
 ?>
