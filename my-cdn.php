@@ -3,7 +3,7 @@
 Plugin Name: My CDN
 Plugin URI: http://blog.mudy.info/my-plugins/
 Description: Help you offloading javascript, css and theme files to your own CDN network. This plugin only handle url rewriting not actual file transferring.
-Version: 1.1
+Version: 1.2
 Author: Yejun Yang
 Author URI: http://blog.mudy.info/
 */
@@ -81,9 +81,17 @@ function my_cdn_menu() {
 }
 
 function my_cdn_options() {
+if ( isset($_POST['action']) && ( $_POST['action'] == 'update_my_cdn' )){
+	update_option('my_cdn_old_url', $_POST['my_cdn_old_url']);
+	update_option('my_cdn_exclude', $_POST['my_cdn_exclude']);
+	update_option('my_cdn_js', $_POST['my_cdn_js']);
+	update_option('my_cdn_css', $_POST['my_cdn_css']);
+	update_option('my_cdn_theme', $_POST['my_cdn_theme']);
+}
+
 ?>
 <div class="wrap">
-<h2>My CDN URL Settings</h>
+<h2>My CDN URL Settings</h2>
 <p>If you use <a href="http://aws.amazon.com/cloudfront/">CloudFront</a>, you can read this <a href="http://blog.mudy.info/2009/02/how-to-copy-selected-files-to-cloudfront/">post</a> to help offloading your static files.</p>
 <p>You may also <a href="http://blog.mudy.info/2009/02/one-line-yuicompressor-script/">preprocess</a> your css js files <br />
 <p>Multiple options can be seperated by comma or space. Please do not leave any trailing comma or space and slash.
@@ -93,9 +101,10 @@ function my_cdn_options() {
 to ensure your CDN service is fully working before saving changes.</p>
 <br />
 <br />
-<form method="post" action="options.php">
-<?php wp_nonce_field('update-options'); ?>
-
+<form method="post" action="">
+<?php 
+// wp_nonce_field('update-options'); 
+?>
 <table class="form-table">
 
 <tr valign="top">
@@ -103,7 +112,6 @@ to ensure your CDN service is fully working before saving changes.</p>
 <td><input type="text" name="my_cdn_old_url" value="<?php echo get_option('my_cdn_old_url'); ?>" size="50" /></td>
 <td><span class="setting-description">Your blog's main urls or any urls you want to rewrite <br />Comma seperated, e.g., http://mydomain.com,http://www.mydomain.com</span></td>
 </tr>
-
 <tr valign="top">
 <th scope="row"><label for="my_cdn_exclude">Excluding URL patterns</label></th>
 <td><input type="text" name="my_cdn_exclude" value="<?php echo get_option('my_cdn_exclude'); ?>" size="50" /></td>
@@ -115,13 +123,11 @@ to ensure your CDN service is fully working before saving changes.</p>
 <td><input type="text" name="my_cdn_js" value="<?php echo get_option('my_cdn_js'); ?>" size="50" /></td>
 <td><span class="setting-description">e.g. http://st1.mydomain.com,http://st2.mydomain.com<br />Empty string will disable this function.</span></td>
 </tr>
-
 <tr valign="top">
 <th scope="row"><label for="my_cdn_css">CSS file pre-URL</label></th>
 <td><input type="text" name="my_cdn_css" value="<?php echo get_option('my_cdn_css'); ?>" size="50" /></td>
 <td><span class="setting-description">e.g. http://st1.mydomain.com,http://st2.mydomain.com<br />Empty string will disable this function.</span></td>
 </tr>
-
 <tr valign="top">
 <th scope="row"><label for="my_cdn_theme">Theme file pre-URL</label></th>
 <td><input type="text" name="my_cdn_theme" value="<?php echo get_option('my_cdn_theme'); ?>" size="50" /></td>
@@ -130,8 +136,7 @@ to ensure your CDN service is fully working before saving changes.</p>
 
 </table>
 
-<input type="hidden" name="action" value="update" />
-<input type="hidden" name="page_options" value="my_cdn_old_url,my_cdn_exclude,my_cdn_js,my_cdn_css,my_cdn_theme" />
+<input type="hidden" name="action" value="update_my_cdn" />
 
 <p class="submit">
 <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />

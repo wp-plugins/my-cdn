@@ -18,6 +18,7 @@ Help you offloading javascript, css and theme files to your own CDN network. Thi
 * Tested with SimpleCDn's Mirror bucket and Amazon CloudFront.
 
 Change Log:
+ Version 1.2: Internal option page changes.
  Version 1.1: Support multiple destination urls.
  Version 1.0: Tight up some regular expression.
 
